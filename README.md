@@ -8,32 +8,18 @@ My first attempt was to dump a snapshot of the database to a file and apply when
 
 The scripts created only create collections and add fields if they don't exist in existing collections, no collection removal, no field type updates, no field removal as well. The plan is if you need to remove data, do it by creating a script, or manually so the risk of loosing data is minimum.
 
-# Features
+### Features
 - download-collections, saves each collection definition to files in a `collections` folder.
 - upload-collections, read each .json file from `collections` folder and call directus APIs to create the - download-flows, saves each collection definition to files in a `collections` folder.
 - upload-collections, read each .json file from `collections` folder and call directus APIs to create the 
 
-## Download database snapshot and apply when starting Directus 
+### How to use the scripts
 
-THIS SOLUTION WILL REMOVE COLLECTIONS THAT ARE NOT PRESENT IN THE SNAPSHOT, USE AT YOUR OWN RISK.
+- Go to the User admin page in directus: and copy the authentication token to be used in the command line. The token can be found at Admin options > Token 
+- Use that token either in the command line as this example shows or `export DIRECTUS_AUTH_TOKEN=...` then execute the command
+- The last parameter is the Directus instance you want to download or upload items to
 
-### Script to save snapshot
-This script will save a file in the current folder with the schema definition of the Directus collections
 ```
-#!/bin/bash
-docker exec -it directus npx directus schema snapshot /directus/snapshots/schema.yml
-docker cp directus:/directus/snapshots/schema.yml .
-```
-
-### Apply the schema to an instance
-
-Include the line `&& node cli.js schema apply --yes /directus/schema.yml \` before starting Directus with `pm2`
-```
-FROM directus/directus:10.8.1
-
-CMD : \
-    && node cli.js bootstrap \
-    && node cli.js schema apply --yes /directus/schema.yml \
-    && pm2-runtime start ecosystem.config.cjs \
-    ;
+cd scripts
+DIRECTUS_AUTH_TOKEN=ve5CprSuperSecret6A5C@Y0uR3adllKwCBE node download-collections.js http://localhost:8055
 ```
